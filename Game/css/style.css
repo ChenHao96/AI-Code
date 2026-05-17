@@ -1,0 +1,221 @@
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #1a1a2e;
+  font-family: 'Press Start 2P', monospace;
+  color: #e2e8f0;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 界面面板 */
+#start-screen, #game-screen, #gameover-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* 像素标题 */
+.pixel-title {
+  font-size: 28px;
+  color: #4ade80;
+  text-shadow:
+    3px 3px 0 #064e3b,
+    -1px -1px 0 #064e3b;
+  letter-spacing: 4px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* 难度选择按钮组 */
+.difficulty-select {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* 像素按钮 */
+.pixel-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  padding: 12px 20px;
+  background: #334155;
+  color: #e2e8f0;
+  border: 3px solid #475569;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.1s, transform 0.1s;
+  image-rendering: pixelated;
+}
+
+.pixel-btn:hover {
+  background: #475569;
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px);
+}
+
+.pixel-btn.active {
+  background: #4ade80;
+  border-color: #22c55e;
+  color: #1a1a2e;
+}
+
+.start-btn {
+  font-size: 16px;
+  padding: 14px 30px;
+  background: #22c55e;
+  border-color: #16a34a;
+  color: #1a1a2e;
+}
+
+.start-btn:hover {
+  background: #4ade80;
+}
+
+/* HUD 信息栏 */
+#hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  font-size: 12px;
+}
+
+#btn-exit {
+  font-size: 11px;
+  padding: 6px 14px;
+  background: #991b1b;
+  border-color: #7f1d1d;
+  color: #e2e8f0;
+}
+
+#btn-exit:hover {
+  background: #b91c1c;
+}
+
+/* 游戏画布容器 */
+#canvas-container {
+  position: relative;
+  line-height: 0;
+}
+
+#game-canvas {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  touch-action: none;
+}
+
+/* 暂停遮罩 */
+#pause-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+}
+
+#pause-overlay span {
+  font-size: 24px;
+  color: #e2e8f0;
+  text-shadow: 2px 2px 0 #000;
+}
+
+/* 结束界面 */
+.score-text {
+  font-size: 16px;
+  color: #e2e8f0;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.new-record {
+  font-size: 18px;
+  color: #facc15;
+  animation: blink 0.5s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* 蛇 ASCII 图标 */
+.snake-ascii canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* 响应式 */
+@media (max-width: 480px) {
+  .pixel-title {
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+  .pixel-btn {
+    font-size: 11px;
+    padding: 10px 14px;
+    border-width: 2px;
+  }
+  .start-btn {
+    font-size: 13px;
+    padding: 12px 22px;
+  }
+  .score-text {
+    font-size: 13px;
+  }
+  #start-screen, #game-screen, #gameover-screen {
+    gap: 14px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 320px) {
+  .pixel-title {
+    font-size: 16px;
+  }
+  .pixel-btn {
+    font-size: 10px;
+    padding: 8px 10px;
+  }
+  .start-btn {
+    font-size: 11px;
+    padding: 10px 16px;
+  }
+}

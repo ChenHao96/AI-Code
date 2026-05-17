@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>贪吃蛇 — 像素复古版</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- 开始界面 -->
+    <div id="start-screen">
+      <h1 class="pixel-title">贪吃蛇</h1>
+      <div class="snake-ascii">
+        <canvas id="logo-canvas" width="120" height="40"></canvas>
+      </div>
+      <div class="difficulty-select">
+        <button class="diff-btn pixel-btn" data-difficulty="easy">简单</button>
+        <button class="diff-btn pixel-btn" data-difficulty="normal">普通</button>
+        <button class="diff-btn pixel-btn" data-difficulty="hard">困难</button>
+      </div>
+      <button id="btn-start" class="pixel-btn start-btn">开始游戏</button>
+    </div>
+
+    <!-- 游戏界面 -->
+    <div id="game-screen" class="hidden">
+      <div id="hud">
+        <span id="hud-score">分数: 0</span>
+        <span id="hud-high">最高: 0</span>
+        <span id="hud-difficulty">普通</span>
+        <button id="btn-exit" class="pixel-btn">退出</button>
+      </div>
+      <div id="canvas-container">
+        <canvas id="game-canvas"></canvas>
+        <div id="pause-overlay" class="hidden">
+          <span>暂停中</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 结束界面 -->
+    <div id="gameover-screen" class="hidden">
+      <h2 class="pixel-title">游戏结束</h2>
+      <p id="final-score" class="score-text"></p>
+      <p id="final-high" class="score-text"></p>
+      <p id="new-record" class="new-record hidden">新纪录!</p>
+      <button id="btn-restart" class="pixel-btn start-btn">再来一局</button>
+    </div>
+
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

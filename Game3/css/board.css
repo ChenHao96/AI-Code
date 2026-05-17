@@ -1,0 +1,22 @@
+#board-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+#board-container canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    0 0 30px rgba(0, 0, 0, 0.08);
+}

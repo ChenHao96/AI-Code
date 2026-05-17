@@ -1,0 +1,327 @@
+#timer-display {
+  display: flex;
+  gap: 16px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+}
+
+.timer-box {
+  flex: 1;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  transition: var(--transition);
+}
+
+.timer-box.active {
+  border-color: #f39c12;
+  box-shadow: 0 0 8px rgba(243, 156, 18, 0.3);
+}
+
+.timer-box .timer-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.timer-box .timer-value {
+  font-size: 28px;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  font-family: 'Courier New', monospace;
+}
+
+.timer-box.warning .timer-value {
+  color: #e74c3c;
+  animation: time-warning 1s ease-in-out infinite;
+}
+
+@keyframes time-warning {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.timer-box.red-timer { border-left: 4px solid var(--piece-red); }
+.timer-box.black-timer { border-left: 4px solid var(--piece-black); }
+
+.game-history-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.game-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 80vh;
+}
+
+.game-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  gap: 12px;
+  transition: background-color var(--transition);
+}
+
+.game-history-item:hover {
+  background: #e8e8e8;
+}
+
+.game-history-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.game-history-date {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.game-history-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.game-history-mode,
+.game-history-result,
+.game-history-rounds {
+  font-size: 0.9rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--bg-primary);
+  white-space: nowrap;
+}
+
+.game-history-result {
+  font-weight: bold;
+  color: #c0392b;
+}
+
+.game-history-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-history-replay,
+.btn-history-delete {
+  padding: 6px 16px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.btn-history-replay {
+  background: #5b8c5a;
+  color: #fff;
+}
+
+.btn-history-replay:hover {
+  background: #4a7a49;
+}
+
+.btn-history-delete {
+  background: #c0392b;
+  color: #fff;
+}
+
+.btn-history-delete:hover {
+  background: #a93226;
+}
+
+/* ========== 菜单样式 ========== */
+
+.menu-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 24px;
+}
+
+.menu-title {
+  font-size: 48px;
+  font-family: var(--font-main);
+  color: var(--board-line);
+  letter-spacing: 24px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 240px;
+}
+
+.menu-btn {
+  padding: 14px 24px;
+  font-size: 18px;
+  font-family: var(--font-main);
+  border: 2px solid var(--board-line);
+  border-radius: var(--radius);
+  background: var(--board-bg);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.menu-btn:hover {
+  background: var(--board-line);
+  color: var(--board-bg);
+}
+
+.menu-btn.secondary {
+  background: var(--bg-secondary);
+  font-size: 15px;
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 240px;
+}
+
+.setting-group label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.setting-group select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid var(--board-line);
+  border-radius: var(--radius);
+  background: white;
+}
+
+/* ===== 棋谱文字面板 ===== */
+#move-record {
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color, #d0c8b0);
+  border-radius: var(--radius, 6px);
+  background: var(--bg-primary, #f5f0e8);
+}
+
+.move-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-family: 'KaiTi', 'STKaiti', 'SimSun', serif;
+}
+
+.move-list-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.move-list-table th {
+  padding: 6px 10px;
+  text-align: center;
+  background: var(--bg-secondary, #e8e0d0);
+  border-bottom: 2px solid var(--border-color, #d0c8b0);
+  font-weight: bold;
+}
+
+.move-list-table td {
+  padding: 4px 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color, #d0c8b0);
+}
+
+.move-list-table tbody tr:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.move-number {
+  width: 36px;
+  color: var(--text-secondary, #888);
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+}
+
+.red-move {
+  color: var(--piece-red, #c0392b);
+  font-weight: bold;
+}
+
+.black-move {
+  color: var(--piece-black, #1a1a1a);
+  font-weight: bold;
+}
+
+.current-move {
+  background: rgba(255, 215, 0, 0.25) !important;
+}
+
+.current-move td {
+  background: rgba(255, 215, 0, 0.25) !important;
+}
+
+/* ===== 回放控制栏 ===== */
+
+.replay-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.replay-btn {
+  padding: 8px 14px;
+  font-size: 14px;
+  border: 1px solid var(--board-line);
+  border-radius: var(--radius);
+  background: var(--board-bg);
+  cursor: pointer;
+  flex: 1;
+  transition: var(--transition);
+}
+
+.replay-btn:hover { background: var(--board-line); color: var(--board-bg); }
+.replay-btn.secondary { background: var(--bg-secondary); }
+
+.replay-info {
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding: 0 8px;
+  align-content: center;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* ========== 控制按钮（悔棋等） ========== */
+
+.control-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  flex: 1;
+  margin: 0 5px;
+  border: 1px solid var(--board-line);
+  border-radius: var(--radius);
+  background: var(--board-bg);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.control-btn:hover {
+  background: var(--board-line);
+  color: var(--board-bg);
+}
+
+#btn-undo {
+  background: #e8d5b7;
+}

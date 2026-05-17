@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>五子棋</title>
+<style>
+:root {
+  --board-bg: #DEB887;
+  --grid-color: #333;
+  --black-stone: #1a1a1a;
+  --white-stone: #f0f0f0;
+  --highlight-color: #FFD700;
+  --bg: #f5f0e8;
+  --panel-bg: #fff;
+  --text: #333;
+  --text-light: #666;
+  --border: #ddd;
+  --btn-bg: #5a4a3a;
+  --btn-hover: #7a6a5a;
+  --btn-active: #4a3a2a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 10px;
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  padding: 12px 0 8px;
+}
+
+.header h1 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--btn-bg);
+  letter-spacing: 0.05em;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 6px 0 12px;
+}
+
+.toolbar button {
+  padding: 7px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.2s, transform 0.1s;
+  background: var(--btn-bg);
+  color: #fff;
+  white-space: nowrap;
+}
+
+.toolbar button:hover { background: var(--btn-hover); }
+.toolbar button:active { transform: scale(0.97); }
+.toolbar button.active { background: #c0392b; }
+.toolbar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.main-area {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.board-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+canvas {
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  cursor: pointer;
+}
+
+canvas.readonly { cursor: default; }
+
+.side-panel {
+  width: 260px;
+  background: var(--panel-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 130px);
+  min-height: 400px;
+}
+
+.panel-header {
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.move-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.move-list::-webkit-scrollbar { width: 5px; }
+.move-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.move-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  cursor: default;
+  transition: background 0.15s;
+  font-size: 0.85rem;
+  border-left: 3px solid transparent;
+}
+
+.move-list.clickable .move-item { cursor: pointer; }
+.move-list.clickable .move-item:hover { background: #f5f0e8; }
+.move-item.active {
+  background: #fff3cd;
+  border-left-color: var(--highlight-color);
+}
+
+.move-item .step-num {
+  color: var(--text-light);
+  min-width: 28px;
+  font-variant-numeric: tabular-nums;
+}
+
+.move-item .stone-indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.move-item .stone-indicator.black { background: radial-gradient(circle at 35% 35%, #555, #111); }
+.move-item .stone-indicator.white { background: radial-gradient(circle at 35% 35%, #fff, #ccc); }
+
+.move-item .coord { color: var(--text-light); }
+.move-item .elapsed { color: var(--text-light); margin-left: auto; font-variant-numeric: tabular-nums; }
+
+.status-bar {
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.status-text { font-weight: 500; }
+.status-text.winner { color: #c0392b; }
+
+.timer { color: var(--text-light); font-variant-numeric: tabular-nums; }
+
+.game-over-banner {
+  display: none;
+  text-align: center;
+  padding: 10px;
+  margin: 8px 14px;
+  background: #fff3cd;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.game-over-banner.show { display: block; }
+
+@media (max-width: 768px) {
+  .main-area {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .side-panel {
+    width: 100%;
+    max-width: 500px;
+    max-height: 260px;
+    min-height: 200px;
+  }
+
+  .header h1 { font-size: 1.3rem; }
+  .toolbar button { padding: 6px 14px; font-size: 0.82rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header"><h1>五子棋</h1></div>
+
+  <div class="toolbar">
+    <button id="btnPvP" class="active">双人对战</button>
+    <button id="btnPvE">人机对战</button>
+    <button id="btnUndo">悔棋</button>
+    <button id="btnRestart">重新开始</button>
+  </div>
+
+  <div class="main-area">
+    <div class="board-wrapper" id="boardWrapper">
+      <canvas id="boardCanvas"></canvas>
+    </div>
+
+    <div class="side-panel">
+      <div class="panel-header">
+        <span>落子记录</span>
+        <span id="moveCount">共 0 手</span>
+      </div>
+      <div class="game-over-banner" id="gameOverBanner"></div>
+      <div class="move-list" id="moveList">
+        <div style="padding:20px;text-align:center;color:#999;">对局尚未开始</div>
+      </div>
+      <div class="status-bar">
+        <span class="status-text" id="statusText">黑方回合</span>
+        <span class="timer" id="timer">00:00</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+class GomokuGame {
+  constructor() {
+    this.BOARD_SIZE = 15;
+    this.CELL_COUNT = this.BOARD_SIZE * this.BOARD_SIZE;
+    this.EMPTY = 0;
+    this.BLACK = 1;
+    this.WHITE = 2;
+
+    this.board = this.createBoard();
+    this.moveHistory = [];
+    this.currentPlayer = this.BLACK;
+    this.gameStatus = 'playing'; // 'playing' | 'ended'
+    this.winner = null;
+    this.winCells = [];
+    this.mode = 'pvp'; // 'pvp' | 'pve'
+    this.viewingStep = -1; // -1 means viewing latest
+    this.lastMove = null;
+    this.timerSeconds = 0;
+    this.timerInterval = null;
+    this.aiThinking = false;
+
+    this.canvas = document.getElementById('boardCanvas');
+    this.ctx = this.canvas.getContext('2d');
+
+    this.initUI();
+    this.resizeCanvas();
+    this.render();
+
+    window.addEventListener('resize', () => {
+      this.resizeCanvas();
+      this.render();
+    });
+  }
+
+  createBoard() {
+    return Array.from({ length: this.BOARD_SIZE }, () =>
+      new Array(this.BOARD_SIZE).fill(this.EMPTY)
+    );
+  }
+
+  // ─── UI Elements ───────────────────────────
+
+  initUI() {
+    this.btnPvP = document.getElementById('btnPvP');
+    this.btnPvE = document.getElementById('btnPvE');
+    this.btnUndo = document.getElementById('btnUndo');
+    this.btnRestart = document.getElementById('btnRestart');
+    this.moveList = document.getElementById('moveList');
+    this.moveCount = document.getElementById('moveCount');
+    this.statusText = document.getElementById('statusText');
+    this.timerEl = document.getElementById('timer');
+    this.gameOverBanner = document.getElementById('gameOverBanner');
+
+    this.btnPvP.addEventListener('click', () => this.switchMode('pvp'));
+    this.btnPvE.addEventListener('click', () => this.switchMode('pve'));
+    this.btnUndo.addEventListener('click', () => this.undo());
+    this.btnRestart.addEventListener('click', () => this.restart());
+
+    this.canvas.addEventListener('click', (e) => this.handleClick(e));
+    this.canvas.addEventListener('mousemove', (e) => this.handleHover(e));
+    this.canvas.addEventListener('mouseleave', () => {
+      this.hoverPos = null;
+      this.render();
+    });
+
+    // Touch support
+    this.canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const rect = this.canvas.getBoundingClientRect();
+      this.handleClick({ clientX: touch.clientX, clientY: touch.clientY });
+    });
+  }
+
+  // ─── Canvas Sizing ─────────────────────────
+
+  resizeCanvas() {
+    const isMobile = window.innerWidth < 768;
+    let size;
+
+    if (isMobile) {
+      size = Math.min(window.innerWidth - 20, 500);
+    } else {
+      const maxBoardWidth = window.innerWidth - 320;
+      const maxBoardHeight = window.innerHeight - 140;
+      size = Math.min(maxBoardWidth, maxBoardHeight, 580);
+    }
+
+    size = Math.max(size, 300);
+    const dpr = window.devicePixelRatio || 1;
+
+    this.canvas.style.width = size + 'px';
+    this.canvas.style.height = size + 'px';
+    this.canvas.width = size * dpr;
+    this.canvas.height = size * dpr;
+
+    this.displaySize = size;
+    this.padding = size * 0.06;
+    this.cellSize = (size - this.padding * 2) / (this.BOARD_SIZE - 1);
+    this.stoneRadius = this.cellSize * 0.44;
+
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.scale(dpr, dpr);
+  }
+
+  // ─── Coordinate Conversion ────────────────
+
+  getIntersection(clientX, clientY) {
+    const rect = this.canvas.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const col = Math.round((x - this.padding) / this.cellSize);
+    const row = Math.round((y - this.padding) / this.cellSize);
+
+    if (col < 0 || col >= this.BOARD_SIZE || row < 0 || row >= this.BOARD_SIZE) {
+      return null;
+    }
+
+    const ix = this.padding + col * this.cellSize;
+    const iy = this.padding + row * this.cellSize;
+    const dist = Math.sqrt((x - ix) ** 2 + (y - iy) ** 2);
+
+    if (dist > this.cellSize * 0.42) return null;
+
+    return { row, col };
+  }
+
+  // ─── Click Handling ────────────────────────
+
+  handleClick(e) {
+    if (this.gameStatus === 'ended') return;
+    if (this.viewingStep >= 0) return; // read-only replay mode
+    if (this.aiThinking) return;
+    if (this.mode === 'pve' && this.currentPlayer === this.WHITE) return;
+
+    const pos = this.getIntersection(e.clientX, e.clientY);
+    if (!pos) return;
+    if (this.board[pos.row][pos.col] !== this.EMPTY) return;
+
+    this.placePiece(pos.row, pos.col);
+  }
+
+  handleHover(e) {
+    if (this.gameStatus === 'ended' || this.viewingStep >= 0 || this.aiThinking) {
+      if (this.hoverPos) { this.hoverPos = null; this.render(); }
+      return;
+    }
+    if (this.mode === 'pve' && this.currentPlayer === this.WHITE) {
+      if (this.hoverPos) { this.hoverPos = null; this.render(); }
+      return;
+    }
+    const pos = this.getIntersection(e.clientX, e.clientY);
+    if (!pos || this.board[pos.row][pos.col] !== this.EMPTY) {
+      if (this.hoverPos) { this.hoverPos = null; this.render(); }
+      return;
+    }
+    if (!this.hoverPos || this.hoverPos.row !== pos.row || this.hoverPos.col !== pos.col) {
+      this.hoverPos = pos;
+      this.render();
+    }
+  }
+
+  // ─── Game Actions ──────────────────────────
+
+  placePiece(row, col) {
+    this.board[row][col] = this.currentPlayer;
+
+    const move = { row, col, player: this.currentPlayer, timestamp: Date.now() };
+    // Trim future history if we placed after a replay step
+    if (this.viewingStep >= 0 && this.viewingStep < this.moveHistory.length - 1) {
+      this.moveHistory = this.moveHistory.slice(0, this.viewingStep + 1);
+    }
+    this.moveHistory.push(move);
+    this.viewingStep = -1;
+    this.lastMove = { row, col };
+    this.hoverPos = null;
+    this.canvas.classList.remove('readonly');
+
+    // Start timer on first move
+    if (this.moveHistory.length === 1) this.startTimer();
+
+    const winResult = this.checkWin(row, col, this.currentPlayer);
+    if (winResult) {
+      this.winner = this.currentPlayer;
+      this.winCells = winResult;
+      this.gameStatus = 'ended';
+      this.stopTimer();
+      this.render();
+      this.updateMoveList();
+      this.updateStatus();
+      return;
+    }
+
+    if (this.moveHistory.length >= this.CELL_COUNT) {
+      this.gameStatus = 'ended';
+      this.stopTimer();
+      this.render();
+      this.updateMoveList();
+      this.updateStatus();
+      return;
+    }
+
+    this.currentPlayer = this.currentPlayer === this.BLACK ? this.WHITE : this.BLACK;
+    this.render();
+    this.updateMoveList();
+    this.updateStatus();
+
+    // AI turn
+    if (this.mode === 'pve' && this.currentPlayer === this.WHITE && this.gameStatus === 'playing') {
+      this.aiThinking = true;
+      this.render();
+      setTimeout(() => this.aiMove(), 50);
+    }
+  }
+
+  checkWin(row, col, player) {
+    const directions = [
+      [0, 1],  // horizontal
+      [1, 0],  // vertical
+      [1, 1],  // diagonal \
+      [1, -1], // diagonal /
+    ];
+
+    for (const [dr, dc] of directions) {
+      const cells = [[row, col]];
+
+      // Forward
+      for (let i = 1; i < 5; i++) {
+        const r = row + dr * i;
+        const c = col + dc * i;
+        if (r < 0 || r >= this.BOARD_SIZE || c < 0 || c >= this.BOARD_SIZE) break;
+        if (this.board[r][c] !== player) break;
+        cells.push([r, c]);
+      }
+
+      // Backward
+      for (let i = 1; i < 5; i++) {
+        const r = row - dr * i;
+        const c = col - dc * i;
+        if (r < 0 || r >= this.BOARD_SIZE || c < 0 || c >= this.BOARD_SIZE) break;
+        if (this.board[r][c] !== player) break;
+        cells.unshift([r, c]);
+      }
+
+      if (cells.length >= 5) return cells;
+    }
+
+    return null;
+  }
+
+  undo() {
+    if (this.gameStatus === 'ended') return;
+    if (this.viewingStep >= 0) return;
+    if (this.aiThinking) return;
+
+    if (this.mode === 'pvp') {
+      if (this.moveHistory.length === 0) return;
+      const last = this.moveHistory.pop();
+      this.board[last.row][last.col] = this.EMPTY;
+      this.currentPlayer = last.player;
+      this.lastMove = this.moveHistory.length > 0
+        ? this.moveHistory[this.moveHistory.length - 1]
+        : null;
+    } else if (this.mode === 'pve') {
+      // Undo player move + AI response (2 steps)
+      if (this.moveHistory.length < 2) return;
+      const aiMove = this.moveHistory.pop();
+      this.board[aiMove.row][aiMove.col] = this.EMPTY;
+      const playerMove = this.moveHistory.pop();
+      this.board[playerMove.row][playerMove.col] = this.EMPTY;
+      this.currentPlayer = this.BLACK;
+      this.lastMove = this.moveHistory.length > 0
+        ? this.moveHistory[this.moveHistory.length - 1]
+        : null;
+    }
+
+    this.viewingStep = -1;
+    this.winCells = [];
+    this.render();
+    this.updateMoveList();
+    this.updateStatus();
+  }
+
+  restart() {
+    this.stopTimer();
+    this.board = this.createBoard();
+    this.moveHistory = [];
+    this.currentPlayer = this.BLACK;
+    this.gameStatus = 'playing';
+    this.winner = null;
+    this.winCells = [];
+    this.viewingStep = -1;
+    this.lastMove = null;
+    this.hoverPos = null;
+    this.timerSeconds = 0;
+    this.aiThinking = false;
+    this.canvas.classList.remove('readonly');
+    this.timerEl.textContent = '00:00';
+    this.gameOverBanner.classList.remove('show');
+    this.render();
+    this.updateMoveList();
+    this.updateStatus();
+  }
+
+  switchMode(mode) {
+    if (this.mode === mode) return;
+    this.mode = mode;
+    this.btnPvP.classList.toggle('active', mode === 'pvp');
+    this.btnPvE.classList.toggle('active', mode === 'pve');
+    this.restart();
+  }
+
+  // ─── Replay ────────────────────────────────
+
+  handleMoveItemClick(item) {
+    if (this.gameStatus !== 'ended') return;
+    const step = parseInt(item.dataset.step);
+    if (isNaN(step)) return;
+    if (step === this.viewingStep) {
+      this.returnToLatest();
+      return;
+    }
+    this.goToStep(step);
+  }
+
+  goToStep(stepIndex) {
+    if (stepIndex < 0 || stepIndex >= this.moveHistory.length) return;
+    this.viewingStep = stepIndex;
+    this.canvas.classList.add('readonly');
+    this.render();
+    this.updateMoveHighlight();
+    this.updateStatus();
+  }
+
+  returnToLatest() {
+    this.viewingStep = -1;
+    this.canvas.classList.remove('readonly');
+    this.render();
+    this.updateMoveHighlight();
+    this.updateStatus();
+  }
+
+  updateMoveHighlight() {
+    const items = this.moveList.querySelectorAll('.move-item');
+    items.forEach((el, i) => {
+      if (i === this.viewingStep) {
+        el.classList.add('active');
+      } else {
+        el.classList.remove('active');
+      }
+    });
+    const activeEl = this.moveList.querySelector('.move-item.active');
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  // ─── Timer ─────────────────────────────────
+
+  startTimer() {
+    if (this.timerInterval) return;
+    this.timerInterval = setInterval(() => {
+      this.timerSeconds++;
+      this.updateTimerDisplay();
+    }, 1000);
+  }
+
+  stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  updateTimerDisplay() {
+    const m = Math.floor(this.timerSeconds / 60);
+    const s = this.timerSeconds % 60;
+    this.timerEl.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  // ─── Status ────────────────────────────────
+
+  updateStatus() {
+    if (this.gameStatus === 'ended') {
+      this.moveList.classList.add('clickable');
+      if (this.winner) {
+        const name = this.winner === this.BLACK ? '黑方' : '白方';
+        const aiLabel = this.mode === 'pve' && this.winner === this.WHITE ? ' (AI)' : '';
+        this.statusText.textContent = name + aiLabel + ' 获胜!';
+        this.statusText.className = 'status-text winner';
+        this.gameOverBanner.textContent = name + aiLabel + ' 获胜!';
+        this.gameOverBanner.classList.add('show');
+      } else {
+        this.statusText.textContent = '平局!';
+        this.statusText.className = 'status-text winner';
+        this.gameOverBanner.textContent = '平局 — 棋盘已满';
+        this.gameOverBanner.classList.add('show');
+      }
+    } else {
+      this.moveList.classList.remove('clickable');
+      if (this.viewingStep >= 0) {
+        this.statusText.textContent = '查看历史';
+        this.statusText.className = 'status-text';
+      } else {
+        const name = this.currentPlayer === this.BLACK ? '黑方回合' : '白方回合';
+        const aiLabel = this.mode === 'pve' && this.currentPlayer === this.WHITE ? ' (AI 思考中...)' : '';
+        this.statusText.textContent = name + aiLabel;
+        this.statusText.className = 'status-text';
+      }
+    }
+  }
+
+  // ─── Move List ─────────────────────────────
+
+  updateMoveList() {
+    this.moveCount.textContent = '共 ' + this.moveHistory.length + ' 手';
+
+    // Clear existing children
+    this.moveList.innerHTML = '';
+
+    if (this.moveHistory.length === 0) {
+      const placeholder = document.createElement('div');
+      placeholder.style.cssText = 'padding:20px;text-align:center;color:#999;';
+      placeholder.textContent = '对局尚未开始';
+      this.moveList.appendChild(placeholder);
+      return;
+    }
+
+    this.moveHistory.forEach((move, i) => {
+      const item = document.createElement('div');
+      item.className = 'move-item' + (this.viewingStep === i ? ' active' : '');
+      item.dataset.step = i;
+      item.onclick = () => this.handleMoveItemClick(item);
+
+      const stepNum = document.createElement('span');
+      stepNum.className = 'step-num';
+      stepNum.textContent = '#' + (i + 1);
+
+      const stone = document.createElement('span');
+      stone.className = 'stone-indicator ' + (move.player === this.BLACK ? 'black' : 'white');
+
+      const playerLabel = document.createElement('span');
+      playerLabel.textContent = (move.player === this.BLACK ? '黑' : '白') + '子';
+
+      const coord = document.createElement('span');
+      coord.className = 'coord';
+      coord.textContent = '(' + move.col + ', ' + move.row + ')';
+
+      const elapsed = document.createElement('span');
+      elapsed.className = 'elapsed';
+      if (i === 0) {
+        elapsed.textContent = '0s';
+      } else {
+        const prevTs = this.moveHistory[i - 1].timestamp;
+        const seconds = Math.round((move.timestamp - prevTs) / 1000);
+        elapsed.textContent = seconds + 's';
+      }
+
+      item.appendChild(stepNum);
+      item.appendChild(stone);
+      item.appendChild(playerLabel);
+      item.appendChild(coord);
+      item.appendChild(elapsed);
+      this.moveList.appendChild(item);
+    });
+
+    // Scroll to active or bottom
+    const activeEl = this.moveList.querySelector('.move-item.active');
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: 'nearest' });
+    } else {
+      this.moveList.scrollTop = this.moveList.scrollHeight;
+    }
+  }
+
+  // ─── AI ────────────────────────────────────
+
+  aiMove() {
+    if (this.gameStatus !== 'playing') {
+      this.aiThinking = false;
+      return;
+    }
+
+    const pos = this.findBestMove();
+    if (pos) {
+      this.placePiece(pos.row, pos.col);
+    }
+    this.aiThinking = false;
+  }
+
+  findBestMove() {
+    let bestScore = -Infinity;
+    let bestMove = null;
+
+    // Score both offense (AI = WHITE) and defense (block BLACK)
+    for (let row = 0; row < this.BOARD_SIZE; row++) {
+      for (let col = 0; col < this.BOARD_SIZE; col++) {
+        if (this.board[row][col] !== this.EMPTY) continue;
+        if (!this.hasNeighbor(row, col, 2)) continue; // Skip isolated cells
+
+        const offenseScore = this.evaluatePosition(row, col, this.WHITE);
+        const defenseScore = this.evaluatePosition(row, col, this.BLACK);
+
+        // Prioritize offense, but strong defense matters too
+        const score = offenseScore * 1.1 + defenseScore;
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestMove = { row, col };
+        }
+      }
+    }
+
+    // If no good move found (shouldn't happen on empty board), play center
+    if (!bestMove) {
+      const center = Math.floor(this.BOARD_SIZE / 2);
+      return { row: center, col: center };
+    }
+
+    return bestMove;
+  }
+
+  hasNeighbor(row, col, distance) {
+    for (let dr = -distance; dr <= distance; dr++) {
+      for (let dc = -distance; dc <= distance; dc++) {
+        if (dr === 0 && dc === 0) continue;
+        const r = row + dr;
+        const c = col + dc;
+        if (r >= 0 && r < this.BOARD_SIZE && c >= 0 && c < this.BOARD_SIZE) {
+          if (this.board[r][c] !== this.EMPTY) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  evaluatePosition(row, col, player) {
+    const directions = [[0, 1], [1, 0], [1, 1], [1, -1]];
+    let totalScore = 0;
+
+    for (const [dr, dc] of directions) {
+      totalScore += this.evaluateDirection(row, col, dr, dc, player);
+    }
+
+    return totalScore;
+  }
+
+  evaluateDirection(row, col, dr, dc, player) {
+    let count = 1; // The placed stone
+    let openEnds = 0;
+
+    // Forward
+    let fCount = 0;
+    for (let i = 1; i <= 5; i++) {
+      const r = row + dr * i;
+      const c = col + dc * i;
+      if (r < 0 || r >= this.BOARD_SIZE || c < 0 || c >= this.BOARD_SIZE) break;
+      if (this.board[r][c] === player) { fCount++; }
+      else if (this.board[r][c] === this.EMPTY) { openEnds++; break; }
+      else break;
+    }
+
+    // Backward
+    let bCount = 0;
+    for (let i = 1; i <= 5; i++) {
+      const r = row - dr * i;
+      const c = col - dc * i;
+      if (r < 0 || r >= this.BOARD_SIZE || c < 0 || c >= this.BOARD_SIZE) break;
+      if (this.board[r][c] === player) { bCount++; }
+      else if (this.board[r][c] === this.EMPTY) { openEnds++; break; }
+      else break;
+    }
+
+    count += fCount + bCount;
+
+    if (count >= 5) return 100000;
+    if (count === 4) {
+      if (openEnds === 2) return 10000;
+      if (openEnds === 1) return 1000;
+      return 0;
+    }
+    if (count === 3) {
+      if (openEnds === 2) return 1000;
+      if (openEnds === 1) return 100;
+      return 0;
+    }
+    if (count === 2) {
+      if (openEnds === 2) return 100;
+      if (openEnds === 1) return 10;
+      return 0;
+    }
+    if (count === 1) {
+      if (openEnds === 2) return 10;
+      if (openEnds === 1) return 1;
+      return 0;
+    }
+
+    return 0;
+  }
+
+  // ─── Rendering ─────────────────────────────
+
+  render() {
+    const ctx = this.ctx;
+    const size = this.displaySize;
+    const pad = this.padding;
+    const cell = this.cellSize;
+    const r = this.stoneRadius;
+
+    ctx.clearRect(0, 0, size, size);
+
+    // Board background
+    ctx.fillStyle = '#DEB887';
+    ctx.fillRect(0, 0, size, size);
+
+    // Wood grain subtle lines
+    ctx.strokeStyle = 'rgba(139,90,43,0.15)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < size; i += 8) {
+      ctx.beginPath();
+      ctx.moveTo(0, i + Math.sin(i * 0.1) * 3);
+      ctx.lineTo(size, i + Math.sin(i * 0.1 + 2) * 3);
+      ctx.stroke();
+    }
+
+    // Grid lines
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 0.8;
+    for (let i = 0; i < this.BOARD_SIZE; i++) {
+      const pos = pad + i * cell;
+      ctx.beginPath();
+      ctx.moveTo(pad, pos);
+      ctx.lineTo(pad + cell * (this.BOARD_SIZE - 1), pos);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(pos, pad);
+      ctx.lineTo(pos, pad + cell * (this.BOARD_SIZE - 1));
+      ctx.stroke();
+    }
+
+    // Star points (天元和四角星位)
+    const starPoints = [
+      [3, 3], [3, 7], [3, 11],
+      [7, 3], [7, 7], [7, 11],
+      [11, 3], [11, 7], [11, 11]
+    ];
+    ctx.fillStyle = '#333';
+    for (const [rStar, cStar] of starPoints) {
+      const cx = pad + cStar * cell;
+      const cy = pad + rStar * cell;
+      ctx.beginPath();
+      ctx.arc(cx, cy, cell * 0.1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Determine the board state to render
+    let renderBoard = this.board;
+    let renderLastMove = this.lastMove;
+
+    if (this.viewingStep >= 0) {
+      // Reconstruct board up to viewingStep
+      renderBoard = this.createBoard();
+      for (let i = 0; i <= this.viewingStep && i < this.moveHistory.length; i++) {
+        const m = this.moveHistory[i];
+        renderBoard[m.row][m.col] = m.player;
+      }
+      renderLastMove = this.viewingStep >= 0 && this.moveHistory.length > 0
+        ? this.moveHistory[this.viewingStep]
+        : null;
+    }
+
+    // Draw stones
+    for (let row = 0; row < this.BOARD_SIZE; row++) {
+      for (let col = 0; col < this.BOARD_SIZE; col++) {
+        if (renderBoard[row][col] === this.EMPTY) continue;
+        const cx = pad + col * cell;
+        const cy = pad + row * cell;
+        this.drawStone(cx, cy, r, renderBoard[row][col]);
+      }
+    }
+
+    // Win highlight (only in current view, not replay)
+    if (this.viewingStep < 0 && this.winCells && this.winCells.length > 0) {
+      for (const [wr, wc] of this.winCells) {
+        const cx = pad + wc * cell;
+        const cy = pad + wr * cell;
+        ctx.save();
+        ctx.shadowColor = '#FFD700';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r + 2, 0, Math.PI * 2);
+        ctx.strokeStyle = '#FFD700';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    // Last move marker (only in current view during gameplay, not replay)
+    if (this.viewingStep < 0 && renderLastMove && this.gameStatus !== 'ended') {
+      const lx = pad + renderLastMove.col * cell;
+      const ly = pad + renderLastMove.row * cell;
+      ctx.fillStyle = renderBoard[renderLastMove.row][renderLastMove.col] === this.BLACK
+        ? '#fff' : '#333';
+      ctx.beginPath();
+      ctx.arc(lx, ly, r * 0.22, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Hover preview
+    if (this.hoverPos && this.viewingStep < 0 && this.gameStatus === 'playing' && !this.aiThinking) {
+      const hx = pad + this.hoverPos.col * cell;
+      const hy = pad + this.hoverPos.row * cell;
+      ctx.globalAlpha = 0.4;
+      this.drawStone(hx, hy, r, this.currentPlayer);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  drawStone(cx, cy, radius, player) {
+    const ctx = this.ctx;
+
+    // Shadow
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+    ctx.shadowBlur = 3;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+
+    if (player === this.BLACK) {
+      const grad = ctx.createRadialGradient(
+        cx - radius * 0.3, cy - radius * 0.3, radius * 0.1,
+        cx, cy, radius
+      );
+      grad.addColorStop(0, '#555');
+      grad.addColorStop(1, '#111');
+      ctx.fillStyle = grad;
+    } else {
+      const grad = ctx.createRadialGradient(
+        cx - radius * 0.3, cy - radius * 0.3, radius * 0.1,
+        cx, cy, radius
+      );
+      grad.addColorStop(0, '#fff');
+      grad.addColorStop(1, '#bbb');
+      ctx.fillStyle = grad;
+    }
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+// ─── Initialize ─────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+  new GomokuGame();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>象棋对战</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/board.css">
+  <link rel="stylesheet" href="css/controls.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/dialogs.css">
+</head>
+<body>
+  <div id="app">
+    <div id="menu-container"></div>
+    <div id="game-container" style="display:none;">
+      <div id="board-container"></div>
+      <div id="side-panel">
+        <div id="timer-display"></div>
+	<div id="game-controls"></div>
+	<div id="replay-controls" style="display:none"></div>
+        <div id="move-record"></div>
+      </div>
+    </div>
+    <div id="replay-container" style="display:none;">
+      <div id="replay-board"></div>
+      <div id="game-history"></div>
+    </div>
+    <div id="dialog-overlay"></div>
+  </div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

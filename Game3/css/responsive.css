@@ -1,0 +1,194 @@
+/* ========== 默认：桌面布局 (>= 768px) ========== */
+
+#menu-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
+}
+
+#game-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 20px;
+  width: 100%;
+}
+
+#board-container {
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+#side-panel {
+  flex: 1;
+  min-width: 200px;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#replay-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 20px;
+  width: 100%;
+}
+
+#replay-board {
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+#replay-controls {
+  flex: 1;
+  min-width: 200px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+}
+
+/* ========== 平板竖屏 (480px - 767px) ========== */
+@media (max-width: 767px) {
+  :root {
+    --cell-size: 48px;
+    --river-gap: 21px;
+  }
+
+  #menu-container {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  #game-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  #board-container {
+    padding: 8px;
+  }
+
+  #side-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #replay-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  #replay-controls {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  button {
+    min-height: 44px;
+  }
+
+  select {
+    min-height: 44px;
+  }
+}
+
+/* ========== 手机 (< 480px) ========== */
+@media (max-width: 479px) {
+  :root {
+    --cell-size: 32px;
+    --river-gap: 14px;
+  }
+
+  #menu-container {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  #game-container {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  #board-container {
+    padding: 4px;
+  }
+
+  #side-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #replay-container {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  #replay-controls {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  button {
+    padding: 6px 16px;
+    font-size: 0.9rem;
+  }
+
+  select {
+    font-size: 0.9rem;
+    padding: 4px 8px;
+  }
+}
+
+/* ========== 横屏小高度 (max-height: 500px) ========== */
+@media (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --cell-size: 42px;
+    --river-gap: 18px;
+  }
+
+  #menu-container {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  #game-container {
+    gap: 12px;
+    padding: 8px;
+  }
+
+  #board-container {
+    padding: 4px;
+  }
+
+  #side-panel {
+    gap: 8px;
+  }
+
+  #replay-container {
+    gap: 12px;
+    padding: 8px;
+  }
+
+  #replay-controls {
+    gap: 8px;
+  }
+}

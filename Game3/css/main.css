@@ -1,0 +1,109 @@
+:root {
+  --board-bg: #f0d9b5;
+  --board-line: #3d2b1f;
+  --piece-red: #c0392b;
+  --piece-black: #1a1a2e;
+  --piece-bg-light: #fdebd0;
+  --piece-bg-dark: #d4a574;
+  --highlight-legal: rgba(0, 180, 0, 0.4);
+  --highlight-capture: rgba(220, 50, 50, 0.5);
+  --highlight-selected: rgba(255, 215, 0, 0.7);
+  --text-primary: #333;
+  --text-secondary: #666;
+  --bg-primary: #fafafa;
+  --bg-secondary: #f0f0f0;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --radius: 8px;
+  --font-main: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+  --transition: 0.2s ease;
+  --cell-size: 60px;
+  --river-gap: 26px;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+
+button {
+  font-family: var(--font-main);
+  font-size: 1rem;
+  padding: 8px 20px;
+  border: none;
+  border-radius: var(--radius);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+button:hover {
+  filter: brightness(0.95);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+select {
+  font-family: var(--font-main);
+  font-size: 1rem;
+  padding: 6px 12px;
+  border: 1px solid var(--board-line);
+  border-radius: var(--radius);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+#game-controls {
+  display: flex;
+  justify-content: center;
+}
+
+.game-history-back {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
